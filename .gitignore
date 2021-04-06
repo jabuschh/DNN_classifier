@@ -4,4 +4,15 @@
 *.pdf
 *.out
 *.err
+*.error
+*.log
 *.*~
+*.gitignore
+*.setenv
+
+other/*
+output/*
+config/*
+input/*
+log/*
+Plots/*

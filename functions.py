@@ -122,7 +122,7 @@ def load_data(parameters, inputfolder, filepostfix):
     eventweights_test = np.load(inputfolder+'/eventweights_'+fraction+'_test'+filepostfix+'.npy').astype(np.float32)
     sample_weights_val = np.load(inputfolder+'/sample_weights_'+fraction+'_val'+filepostfix+'.npy').astype(np.float32)
     eventweights_val = np.load(inputfolder+'/eventweights_'+fraction+'_val'+filepostfix+'.npy').astype(np.float32)
-  
+
     signal_identifiers = ['RSGluon_All', 'RSGluon_M1000', 'RSGluon_M2000', 'RSGluon_M3000', 'RSGluon_M4000', 'RSGluon_M5000', 'RSGluon_M6000']
     signals = {}
     signal_eventweights = {}
@@ -133,7 +133,7 @@ def load_data(parameters, inputfolder, filepostfix):
 #        sum_signal_eventweights = signal_eventweights[i].sum()
 #        signal_normweights[i] = np.array([1./sum_signal_eventweights for j in range(signal_eventweights[i].shape[0])])
     return input_train, input_test, input_val, labels_train, labels_test, labels_val, sample_weights_train, sample_weights_test, sample_weights_val, eventweights_train, eventweights_test, eventweights_val, signals, signal_eventweights, signal_normweights
-    
+
 
 
 def load_predictions(outputfolder, filepostfix):
@@ -325,7 +325,7 @@ def get_data_dictionaries(parameters, eventweights_train, sample_weights_train, 
                 weights_tests_thistrueclass[node]   = sample_weights_test[labels_test[:,cl] == 1]
             if(node=='TTbar'):
                 print "labels_train[:,cl], pred_train[:,node][labels_train[:,cl] == 1]", labels_train[:,cl], pred_train[:,node][labels_train[:,cl] == 1]
-            
+
             pred_trains_thistrueclass[node] = pred_train[:,node][labels_train[:,cl] == 1]
             pred_vals_thistrueclass[node] = pred_val[:,node][labels_val[:,cl] == 1]
             pred_tests_thistrueclass[node] = pred_test[:,node][labels_test[:,cl] == 1]
@@ -360,10 +360,10 @@ def get_data_dictionaries_onesample(parameters, eventweights, sample_weights, pr
     classes = parameters['classes']
     eqweight = parameters['eqweight']
     pred_d = {}
-    weights_d = {}   
+    weights_d = {}
     normweights_d = {}
     lumiweights_d = {}
-   
+
 
     for cl in classes.keys():
         print "cl = ",cl
@@ -373,7 +373,7 @@ def get_data_dictionaries_onesample(parameters, eventweights, sample_weights, pr
         lumiweights_thistrueclass = {}
         for node in classes.keys():
             #print "node = ",node
-            if(node == 3): 
+            if(node == 3):
                 print "labels[:,cl] = ",labels[:,cl]
                 print "pred[:,node][labels[:,cl] == 1] = ",pred[:,node][labels[:,cl] == 1]
             if not eqweight:
@@ -1916,7 +1916,7 @@ class check_early_stopping:
 
 def plot_prediction_samples(parameters, plotfolder, pred_train_all, labels_train, eventID):
     if not os.path.isdir(plotfolder): os.makedirs(plotfolder)
-    
+
     print 'Starting to plot prediction in all samples for 1 event and 1 class'
     tag = dict_to_str(parameters)
     classtitles = get_classtitles(parameters)

@@ -58,22 +58,19 @@ parameters = {
 #    'batchsize': 8192, #131072/16
 #    'batchsize': 64,
 #    'classes':{0: ['ST'], 1: ['TTbar'], 2:['WJets'], 3:['DY']},
-    'classes':{0: ['ST_t'], 1: ['ST_tW','TTbar'], 2:['WJB','WJC','WJL','DY']},
+    'classes':{0: ['TTbar'], 1: ['WJets'], 2:['DY'], 3:['ST'], 4:['Diboson']}, # signal-agnostic + multiclass
     'regmethod': 'dropout',
     'regrate':0.40,
     'batchnorm': False,
-#    'epochs':200,
-#    'epochs':400,
-    'epochs':1000,
-#    'epochs':7,
+    'epochs':1000, #10
     'learningrate': 0.00050,
     'runonfraction': 0.99,
 #    'runonfraction': 0.49,
 #    'runonfraction': 0.01,
     'eqweight':False,
-    'preprocess': 'MinMaxScaler',
+    'preprocess': 'MinMaxScaler', # MinMaxScaler or StandardScaler
     'sigma': 1.0, #sigma for Gaussian prior (BNN only)
-    'inputdir': '../InputsTTbar/',
+    'inputdir': '/nfs/dust/cms/user/jabuschh/NonResonantTTbar/RunII_102X_v2/MLinputs_numpy_myDNN_2018muon/',
 #    'inputdir': 'input/2017_Moriond19JEC_RightLumiweights_forml_morevar_Puppi/',#general path to inputs with systematic variations
 #    'inputdir': 'input/2017_Moriond19JEC_RightLumiweights_forml_morevar_Puppi_2/',#general path to inputs with systematic variations
     #        'systvar': variations[ivars],
@@ -94,7 +91,7 @@ for ivars in range(len(variations)):
      inputfolder = parameters['inputdir']+parameters['inputsubdir']+parameters['systvar']+'/'+parameters['prepreprocess']+'/'+ classtag
      GetInputs(parameters)
      PlotInputs(parameters, inputfolder=inputfolder, filepostfix='', plotfolder='Plots/'+parameters['prepreprocess']+'/InputDistributions/'+parameters['systvar']+'/' + classtag)
-    
+
 MixInputs(parameters, outputfolder=parameters['inputdir']+parameters['preprocess']+'/'+merged_str+'/' + classtag, variations=variations, filepostfix='')
 SplitInputs(parameters, outputfolder=parameters['inputdir']+parameters['preprocess']+'/'+merged_str+'/' + classtag, filepostfix='')
 FitPrepocessing(parameters, outputfolder=parameters['inputdir']+parameters['preprocess']+'/'+merged_str+'/' + classtag, filepostfix='')
@@ -110,7 +107,7 @@ PlotInputs(parameters, inputfolder=inputfolder, filepostfix='', plotfolder=plotf
 
 ########
 
-# # DNN 
+# # DNN
 TrainNetwork(parameters, inputfolder=parameters['inputdir']+parameters['preprocess']+'/'+merged_str+'/'+classtag, outputfolder='output/'+parameters['preprocess']+'/DNN_'+tag)
 PredictExternal(parameters, inputfolder=parameters['inputdir']+parameters['preprocess']+'/'+merged_str+'/'+classtag, outputfolder='output/'+parameters['preprocess']+'/DNN_'+tag, filepostfix='')
 PlotPerformance(parameters, inputfolder=parameters['inputdir']+parameters['preprocess']+'/'+merged_str+'/'+classtag, outputfolder='output/'+parameters['preprocess']+'/DNN_'+tag, filepostfix='', plotfolder='Plots/'+parameters['preprocess']+'/DNN_'+tag, use_best_model=True, usesignals=[2,4])

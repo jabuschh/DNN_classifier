@@ -1,4 +1,0 @@
-export PATH="/beegfs/desy/user/deleokse/anaconda2/bin:$PATH"
-export PYTHONPATH=:"/beegfs/desy/user/deleokse/anaconda2/lib/python27.zip":"/beegfs/desy/user/deleokse/anaconda2/lib/python2.7":"/beegfs/desy/user/deleokse/anaconda2/lib/python2.7/plat-linux2":"/beegfs/desy/user/deleokse/anaconda2/lib/python2.7/lib-tk":"/beegfs/desy/user/deleokse/anaconda2/lib/python2.7/lib-old":"/beegfs/desy/user/deleokse/anaconda2/lib/python2.7/lib-dynload":"/beegfs/desy/user/deleokse/anaconda2/lib/python2.7/site-packages":"/usr/lib64/python2.7/site-packages"
-
-export TMPDIR=/beegfs/desy/user/deleokse/tmp

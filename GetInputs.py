@@ -41,7 +41,7 @@ def GetInputs(parameters):
     classtag = get_classes_tag(parameters)
     inputdir = parameters['inputdir']
     systvar = parameters['systvar']
-    inputsubdir = parameters['inputsubdir'] 
+    inputsubdir = parameters['inputsubdir']
     #path to input files: inputdir + systvar + inputsubdir
 
     if os.path.isdir(inputdir+inputsubdir+systvar+'/'+prepreprocess+'/'+ classtag):
@@ -54,7 +54,7 @@ def GetInputs(parameters):
     else:
         os.makedirs(inputdir+inputsubdir+systvar+'/'+prepreprocess+'/'+ classtag)
 
-    maxfiles_per_sample = {'TTbar': -1, 'WJB': -1,'WJL': -1,'WJC': -1, 'ST_t': -1, 'ST_tW': -1, 'DY': -1}
+    maxfiles_per_sample = {'TTbar': -1, 'WJets': -1,'DY': -1,'ST': -1, 'Diboson': -1}
 
     # Find initial file for each class
 #    inputfiles = os.listdir('input/MLInput')
@@ -196,11 +196,11 @@ def GetInputs(parameters):
 
     # Cut off some events if not running on full sample
     # percentage = 0.01
-    percentage = runonfraction    
+    percentage = runonfraction
     frac_train = 0.6 * percentage
     frac_test  = 0.2 * percentage
     frac_val   = 0.2 * percentage
-    
+
     sumweights = np.sum(eventweight_total, axis=0)
     print 'shape of all inputs: ', input_total.shape
     print 'shape and sum of event weights: ', eventweight_total.shape, sumweights
@@ -243,7 +243,7 @@ def GetInputs(parameters):
     eventweight_val = eventweight_total[takeupto_test:takeupto_val]
     print 'shapes of inputs (train, test, val): ', input_train.shape, input_test.shape, input_val.shape
 
-    # Calculate class weights such, that after weighting by class_weight all classes have the same number of weighted events, 
+    # Calculate class weights such, that after weighting by class_weight all classes have the same number of weighted events,
     # where all events are ALSO weighted by eventweight --> total weight = class_weight * eventweight
     class_weights = {}
     # scale each class to the one with the smallest sum of weights
@@ -309,7 +309,7 @@ def GetInputs(parameters):
 
 #     #print "mean = ", np.mean(input_train, axis=0)[0]
 #     #print "std = ", np.std(input_train, axis=0)[0]
-    
+
 #     #print "scaler.mean_ =", scaler.mean_[0]
 #     #print "scaler.scale_ = ",scaler.scale_[0]
 
@@ -329,7 +329,7 @@ def GetInputs(parameters):
 #         print " === MinMaxScaler preprocessing ==="
 #         scaler = preprocessing.MinMaxScaler().fit(input_train)
 #     else:
-#         print("preprocess set to unknown value! going to use standart StandardScaler preprocessing") 
+#         print("preprocess set to unknown value! going to use standart StandardScaler preprocessing")
 #         scaler = preprocessing.StandardScaler().fit(input_train)
 
 # #    scaler =  preprocessing.PowerTransformer(method='yeo-johnson').fit(input_train)
@@ -353,7 +353,7 @@ def GetInputs(parameters):
 #             line = var + ' StandardScaler ' + str(mean) + ' ' + str(scale) + '\n'
 #             f.write(line)
 #     ### END Scaling
-    
+
     output_path = inputdir+inputsubdir+systvar+'/'+prepreprocess+'/'+classtag
     # output_path =inputdir+systvar+inputsubdir+prepreprocess+'/'+classtag
     print 'Store files in ',output_path
@@ -391,7 +391,7 @@ def MixInputs(parameters, outputfolder, variations, filepostfix):
     tag = dict_to_str(parameters)
     if not os.path.isdir(outputfolder):
         os.makedirs(outputfolder)
-   
+
     #input_array_all = np.ones((input_train.shape[0]+input_test.shape[0]+input_val.shape[0], input_train.shape[1]+labels_sample.shape[1]+2))
     input_array_all = np.ones((1,1))
     input_train_shape1 = 0 #to split concatenated array
@@ -413,11 +413,11 @@ def MixInputs(parameters, outputfolder, variations, filepostfix):
         labels_sample = np.concatenate((labels_train,labels_test,labels_val), axis=0)
         eventweights_sample = np.concatenate((eventweights_train,eventweights_test,eventweights_val), axis=0)
         eventweights_sample = eventweights_sample.reshape((eventweights_sample.shape[0], 1))
-        
+
         #FixMe sample weigtht containts weight to equalize the samples and calculated per systematic variation
-        #for merged samples it should be recalculated. However using equally weighted samples does not give advantage, 
+        #for merged samples it should be recalculated. However using equally weighted samples does not give advantage,
         #thus this variable is not going to be used in the nearest future and left it as it's now
-        sample_weights_sample = np.concatenate((sample_weights_train,sample_weights_test,sample_weights_val), axis=0) 
+        sample_weights_sample = np.concatenate((sample_weights_train,sample_weights_test,sample_weights_val), axis=0)
         sample_weights_sample = sample_weights_sample.reshape((sample_weights_sample.shape[0],1))
    #     input_array = np.concatenate((input_sample,labels_sample,sample_weights_sample,eventweights_sample), axis=1) #array with all backgrounds at one place
 
@@ -461,7 +461,7 @@ def MixInputs(parameters, outputfolder, variations, filepostfix):
 #        np.save(outputfolder+'/'+signal_identifiers[i]+'_set_raw.npy', input_signal_array_all[i][:,0:-2])
 #        np.save(outputfolder+'/'+signal_identifiers[i]+'_set_raw_eventweight.npy', input_signal_array_all[i][:,-2])
 #        np.save(outputfolder+'/'+signal_identifiers[i]+'_set_raw_sample_weights.npy', input_signal_array_all[i][:,-1])
-#    np.save(outputfolder+'/input_'+fraction+'_signal_dict_array_all.npy', input_signal_array_all) #signal stored as dictionary 
+#    np.save(outputfolder+'/input_'+fraction+'_signal_dict_array_all.npy', input_signal_array_all) #signal stored as dictionary
 #    del input_signal_array_all
 
     print 'input_array_all.shape: ',input_array_all.shape
@@ -488,10 +488,10 @@ def SplitInputs(parameters, outputfolder, filepostfix):
 
     input_array_all = np.load(outputfolder+'/input_'+fraction+'_bkg_array_all.npy')
     #train1_set, train2_set, test_set, val_set = np.array_split(input_array_all,4,axis=0) #FixME: split now 0.5,0.25,0.25 and not 0.66/0.16/0.16 as before
-    train1_set, train2_set, train3_set, test_set, val_set = np.array_split(input_array_all,5,axis=0) #Split 0.6,0.2,0.2 
+    train1_set, train2_set, train3_set, test_set, val_set = np.array_split(input_array_all,5,axis=0) #Split 0.6,0.2,0.2
 
     train_set = np.concatenate((train1_set, train2_set, train2_set), axis=0)
-    
+
 
     f_train = gzip.GzipFile(outputfolder+'/input_'+fraction+'_train_set_raw.npy.gz', "w")
     np.save(file=f_train, arr=train_set[:,0:input_train_shape1])
@@ -556,7 +556,7 @@ def FitPrepocessing(parameters, outputfolder, filepostfix):
         print " === MinMaxScaler preprocessing ==="
         scaler = preprocessing.MinMaxScaler().fit(input_train_subset)
     else:
-        print("preprocess set to unknown value! going to use standart StandardScaler preprocessing") 
+        print("preprocess set to unknown value! going to use standard StandardScaler preprocessing")
         scaler = preprocessing.StandardScaler().fit(input_train_subset)
 
     # Write out scaler info
@@ -586,7 +586,7 @@ def FitPrepocessing(parameters, outputfolder, filepostfix):
         scaler_data_ = np.array([scaler.data_min_, scaler.data_max_])
         np.save(outputfolder+'/NormInfo.npy', scaler_data_)
 
-    print("Preprocessing parameters are prepared and stored in ",outputfolder)
+    print("Preprocessing parameters are prepared and stored in ", outputfolder)
 
 def ApplyPrepocessing(parameters, outputfolder, filepostfix, setid):
     print("****** ApplyPrepocessing ******")
