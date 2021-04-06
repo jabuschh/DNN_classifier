@@ -10,9 +10,9 @@
 .gitignore
 .setenv
 
-other/*
-output/*
-config/*
-input/*
-log/*
-Plots/*
+other/
+output/
+config/
+input/
+log/
+Plots/
