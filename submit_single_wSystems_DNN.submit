@@ -1,16 +1,14 @@
 # Unix submit description file: simple submit file
 
-executable              = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/run_steer_inputs_wSystems_DNN.sh
+executable              = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/run_single_wSystems_DNN.sh
 output                  = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/log/condorJob_$(Cluster)_$(Process).out
 error                   = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/log/condorJob_$(Cluster)_$(Process).error
 log                     = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/log/condorJob_$(Cluster)_$(Process).log
 
 Requirements = OpSysAndVer == "CentOS7" && CUDADeviceName == "GeForce GTX 1080 Ti"
 Request_GPUs = 1
-#RequestMemory = 2000
 
-# uncomment this if you want to use the job specific variables $CLUSTER and $PROCESS inside your batchjob
-#environment = "CLUSTER=$(Cluster) PROCESS=$(Process)"
+#RequestMemory = 2000
 
 # uncomment this to specify a runtime longer than 3 hours (time in seconds)
 #+RequestRuntime = 6000

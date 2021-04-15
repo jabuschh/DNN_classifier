@@ -1,0 +1,11 @@
+# Unix submit description file: simple submit file
+
+executable   = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/run_array_wSystems_DNN.sh
+output       = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/log/condorJob_$(Cluster)_$(Process).out
+error        = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/log/condorJob_$(Cluster)_$(Process).error
+log          = /nfs/dust/cms/user/jabuschh/NonResonantTTbar/DNNClassifier_py2/log/condorJob_$(Cluster)_$(Process).log
+arguments    = $(Process)
+Requirements = OpSysAndVer == "CentOS7" && CUDADeviceName == "GeForce GTX 1080 Ti"
+Request_GPUs = 1
+
+queue 162

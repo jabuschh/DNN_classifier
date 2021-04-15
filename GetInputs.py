@@ -564,9 +564,9 @@ def FitPrepocessing(parameters, outputfolder, filepostfix):
         for i in range(np.mean(input_train_set, axis=0).shape[0]): #valid only for StandardScaler, placeholder for the rest
             var = variable_names[i]
             if(parameters['preprocess'] == 'StandardScaler'):
-                mean = scaler.mean_[i] #valid only for StandardScaler, placeholder for the rest
-                scale = scaler.std_[i] #valid only for StandardScaler, placeholder for the rest
-                line = var + ' StandardScaler ' + str(mean) + ' ' + str(scale) + '\n'
+                mean  = scaler.mean_[i]  #valid only for StandardScaler, placeholder for the rest
+                scale = scaler.scale_[i] #valid only for StandardScaler, placeholder for the rest
+                line  = var + ' StandardScaler ' + str(mean) + ' ' + str(scale) + '\n'
             elif(parameters['preprocess'] == 'MinMaxScaler'):
                 # minv = scaler.min_[i] #valid only for MinMaxScaler
                 # scale = scaler.scale_[i] #valid only for MinMaxScaler
@@ -576,12 +576,14 @@ def FitPrepocessing(parameters, outputfolder, filepostfix):
                 line = var + ' MinMaxScaler ' + str(minv) + ' ' + str(maxv) + '\n'
 
             else:
-                mean = scaler.mean_[i] #valid only for StandardScaler, placeholder for the rest
-                scale = scaler.std_[i] #valid only for StandardScaler, placeholder for the rest
-                line = var + ' StandardScaler ' + str(mean) + ' ' + str(scale) + '\n'
+                mean  = scaler.mean_[i]  #valid only for StandardScaler, placeholder for the rest
+                scale = scaler.scale_[i] #valid only for StandardScaler, placeholder for the rest
+                line  = var + ' StandardScaler ' + str(mean) + ' ' + str(scale) + '\n'
             f.write(line)
     if(parameters['preprocess'] == 'StandardScaler'):
-        print("Implement storage of parameters in array!")
+        # print("Implement storage of parameters in array!")
+        scaler_data_ = np.array([scaler.mean_, scaler.scale_])
+        np.save(outputfolder+'/NormInfo.npy', scaler_data_)
     elif(parameters['preprocess'] == 'MinMaxScaler'):
         scaler_data_ = np.array([scaler.data_min_, scaler.data_max_])
         np.save(outputfolder+'/NormInfo.npy', scaler_data_)

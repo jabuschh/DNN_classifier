@@ -36,16 +36,16 @@ import pandas as pd
 def TrainNetwork(parameters, inputfolder, outputfolder):
 
     # Get parameters
-    layers=parameters['layers']
-    batch_size=parameters['batchsize']
-    regmethod=parameters['regmethod']
-    regrate=parameters['regrate']
-    batchnorm=parameters['batchnorm']
-    epochs=parameters['epochs']
+    layers =parameters['layers']
+    batch_size =parameters['batchsize']
+    regmethod =parameters['regmethod']
+    regrate =parameters['regrate']
+    batchnorm =parameters['batchnorm']
+    epochs =parameters['epochs']
     learningrate = parameters['learningrate']
     runonfraction = parameters['runonfraction']
     fraction = get_fraction(parameters)
-    eqweight=parameters['eqweight']
+    eqweight =parameters['eqweight']
     tag = dict_to_str(parameters)
     classtag = get_classes_tag(parameters)
     train_new_model = True
@@ -317,13 +317,13 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
     #     kernel_regularizer=regularizers.l2(regrate)
 
     #########################################################################
-    
+
     # Begin defining calculation graph:
     # wrapping graph with graph.as_default() is better for the case of starting
     # main() several times in same python code -> each time new graph and new Session
     graph = tf.Graph()
     with graph.as_default():
-        
+
 
         # Placeholders for later use; handle for feedable iterator
         lr_pl =  tf.placeholder(tf.float32, shape=(), name="learning_rate")
@@ -384,7 +384,7 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
         batchnorm_hd = []
         dropout_hd = []
 
-        #Method1: issue during training : You must feed a value for placeholder tensor 'input_1' 
+        #Method1: issue during training : You must feed a value for placeholder tensor 'input_1'
         #### Without DropOut
 #        inputs = tf.keras.layers.Input(tensor=input_train_placeholder)
 #        inputs = tf.keras.layers.Input(tensor=iterator_train[0])
@@ -408,8 +408,8 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
         print 'Number of output classes: %i' % (labels_train.shape[1])
         #print 'Number of training: %i' % (labels_train.shape[0])
         model = tf.keras.models.Model(inputs=inputs,outputs=last_layer)
-        print model.summary() 
-        
+        print model.summary()
+
         # #TEST loading of weights
         # file = h5py.File('output/BNN_'+tag+'/model.h5', 'w')
         # print("Path:",'output/BNN_'+tag+'/model.h5')
@@ -438,7 +438,7 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
         labels = tf.cast(next_labels, tf.float32) #TEST
         weights = tf.cast(next_sample_weights, tf.float32) #TEST
 
-        print("labels.shape = ",labels.shape) 
+        print("labels.shape = ",labels.shape)
         print("logits.shape = ",logits.shape)
         print("weights.shape = ",weights.shape)
 
@@ -451,7 +451,7 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
         # see https://stackoverflow.com/questions/44560549/unbalanced-data-and-weighted-cross-entropy
         #        cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=logits, name="cross_entropy")
         ##!!! cross_entropy: softmax_cross_entropy_with_logits
-        ## In mutually exclusive multilabel classification, we use softmax_cross_entropy_with_logits, which behaves differently: 
+        ## In mutually exclusive multilabel classification, we use softmax_cross_entropy_with_logits, which behaves differently:
         ## each output channel corresponds to the score of a class candidate. The decision comes after, by comparing the respective outputs of each channel.
         cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits, name="cross_entropy")
 #        neg_log_likelihood = tf.reduce_mean(cross_entropy)
@@ -461,23 +461,23 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
 #        print("weights.shape = ",weights.shape)
         loss_reg = tf.reduce_sum(model.losses)
 
-    
+
         if loss_reg == 0: # case for deterministic L2-scale=0
             loss_reg = tf.constant(0., dtype=neg_log_likelihood.dtype)
-        
+
         # for BNN case need /train-size factor!
         is_deterministic = False
         if not is_deterministic:
             loss_reg /= batch_size
         loss = tf.add(neg_log_likelihood, loss_reg, name="loss")
-       
-        
+
+
         opt = tf.train.AdamOptimizer(learning_rate=learningrate, beta1=0.9, beta2=0.999, epsilon=1e-8, use_locking=False) #TEST
         #opt = keras.optimizers.Adam(lr=learningrate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
         train_op = opt.minimize(loss, name="train_op")
         ################################
         # Calculating mean predictive mean / stddev / accuracy and ROC for testing
-        
+
         # Defintion of DenseFlipout layer in tensorflow probability:
         #   "This layer implements the Bayesian variational inference analogue to
         #   a dense layer by assuming the `kernel` and/or the `bias` are drawn
@@ -492,10 +492,10 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
         # Prediction of a BNN is given by the Mean over n MonteCarlo samples.
         # the mean is calculated as a running mean via tf.metrics.mean_tensor() here.
         # The std is calculated via std**2 = <x**2> - <x>**2 and tf.metrics.mean_tensor().
-        
+
         # predicted label for single forward pass (n_MonteCarlo = 1)
         predicted_label = tf.round(label_distribution)
-        
+
         # name_scope: be able to reset the internal variable independendly!
         # cheap estimate of accuracy via one forward pass (n_MonteCarlo = 1)
         print("batch_size",batch_size)
@@ -507,7 +507,7 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
             val_acc, val_acc_op = tf.metrics.accuracy(labels=labels, predictions=predicted_label)
 
         ############################################################################
-    
+
         # shitty set_shape! Problem: mean_tensor operation needs clearly defined
         # tensor shapes... (Maybe find a better solution). This will lead to
         # problems if one wants to load full meta graph with different batch_size
@@ -518,10 +518,10 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
 #        label_distribution.set_shape([batch_size])
         with tf.name_scope('mean'):
             mean, mean_op = tf.metrics.mean_tensor(label_distribution)
-            
+
         with tf.name_scope("square_mean"):
                 sq_mean, sq_mean_op = tf.metrics.mean_tensor(tf.square(label_distribution))
-                
+
         # standard deviation, give zero if var<0 (happens when mean_op is close to 1,
         # so very small stddev)
         var = tf.subtract(sq_mean_op, tf.square(mean_op)) # variance
@@ -535,7 +535,7 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
         logits.set_shape([batch_size,labels_train.shape[1]])
         with tf.name_scope('mean_logits'):
             mean_logits, mean_logits_op = tf.metrics.mean_tensor(logits)
-        
+
         with tf.name_scope("square_mean_logits"):
             sq_mean_logits, sq_mean_logits_op = tf.metrics.mean_tensor(tf.square(logits))
 
@@ -644,7 +644,7 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
                                                               handle: train_handle,
                                                               #input_train_placeholder: input_train,
                                                               is_training: True,
-                                                              
+
                                                           })
 
                         #print("loss_value: ",loss_value, epoch)
@@ -703,9 +703,9 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
                 loss_average = np.mean(loss_in_epoch)
                 print("loss_average_train: ",loss_average)
                 # Estimation of true accuracy!
-                sess.run(iterator_train.initializer, feed_dict={input_train_placeholder: input_train, labels_train_placeholder: labels_train, 
+                sess.run(iterator_train.initializer, feed_dict={input_train_placeholder: input_train, labels_train_placeholder: labels_train,
                                                                 sample_weights_train_placeholder: sample_weights_train,
-                                                                input_val_placeholder: input_val, labels_val_placeholder: labels_val, 
+                                                                input_val_placeholder: input_val, labels_val_placeholder: labels_val,
                                                                 sample_weights_val_placeholder: sample_weights_val}) # need for loss evaluation
                 acc_true_value, train_acc_value, loss_reg_value = sess.run([acc_true, train_acc, loss_reg],
                             feed_dict={loss_norm: batch_size,
@@ -883,12 +883,12 @@ def TrainBayesianNetwork(parameters, inputfolder, outputfolder):
 
 # #            logits = model(next_element)
 #             #        print 'logits_pr_train[1]: ',logits_pr_train[1]
-#             sess.run(iterator_train.initializer, 
-#                      feed_dict={input_train_placeholder: input_train, 
+#             sess.run(iterator_train.initializer,
+#                      feed_dict={input_train_placeholder: input_train,
 #                                 labels_train_placeholder: labels_train,
 #                             })
-#             try:   
-#                 while True:   
+#             try:
+#                 while True:
 #                     predic_train, next_element_value = sess.run([label_distribution,next_element],feed_dict={handle: train_handle,is_training: False})
 #                     print 'next_element_value[0] = ',next_element_value[0]
 #                     print 'predic_train[0] = ',predic_train[0]
@@ -923,7 +923,7 @@ def TrainDeepNetwork(parameters, inputfolder, outputfolder):
     tag = dict_to_str(parameters)
     classtag = get_classes_tag(parameters)
     train_new_model = True
-    #FixME: can't simply re-load model with tfp, only weights are stored -> have to (re)build it 
+    #FixME: can't simply re-load model with tfp, only weights are stored -> have to (re)build it
     if not os.path.isdir('output/DNN_' + tag): os.makedirs('output/DNN_'+tag)
 
     input_train, input_test, input_val, labels_train, labels_test, labels_val, sample_weights_train, sample_weights_test, sample_weights_val, eventweights_train, eventweights_test, eventweights_val, signals, signal_eventweights, signal_normweights = load_data(parameters, inputfolder=inputfolder, filepostfix='')
@@ -946,7 +946,7 @@ def TrainDeepNetwork(parameters, inputfolder, outputfolder):
     inputs = tf.keras.layers.Input(shape=(input_train.shape[1],))
 
 #     #With dropout
-    layer_hd.append(tf.layers.Dense(layers[0], activation=tf.nn.relu)(inputs)) 
+    layer_hd.append(tf.layers.Dense(layers[0], activation=tf.nn.relu)(inputs))
     dropout_hd.append(tf.layers.dropout(layer_hd[0], rate=regrate)) #FixME: regmethod might be different
     #batchnorm_hd.append(tf.layers.batch_normalization(dropout_hd[0]))
     k=1
@@ -961,7 +961,7 @@ def TrainDeepNetwork(parameters, inputfolder, outputfolder):
     last_layer = tf.layers.Dense(labels_train.shape[1], activation='softmax')(dropout_hd[k-1])
 
     # #Without dropout
-    # layer_hd.append(tf.layers.Dense(layers[0], activation=tf.nn.relu)(inputs)) 
+    # layer_hd.append(tf.layers.Dense(layers[0], activation=tf.nn.relu)(inputs))
     # k=1
     # for i in layers[1:len(layers)+1]:
     #     print("current k:",k)
